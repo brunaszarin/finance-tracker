@@ -25,7 +25,7 @@ jobs:
           distribution: temurin
 
       - name: Build e testes
-        working-directory: backend
         run: |
-          chmod +x mvnw
+          chmod +x backend/mvnw
+          cd backend
           ./mvnw verify
