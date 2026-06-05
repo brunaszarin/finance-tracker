@@ -1,5 +1,6 @@
 package com.financetracker.api.controller;
 
+import com.financetracker.api.dto.CategoryResponse;
 import com.financetracker.api.model.Category;
 import com.financetracker.api.model.TransactionType;
 import com.financetracker.api.model.User;
@@ -23,28 +24,25 @@ public class CategoryController {
     private final CategoryRepository categoryRepository;
 
     @GetMapping
-    public ResponseEntity<List<Category>> findAll(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(categoryRepository.findByUser(user));
+    public ResponseEntity<List<CategoryResponse>> findAll(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(
+                categoryRepository.findByUser(user)
+                        .stream()
+                        .map(CategoryResponse::from)
+                        .toList()
+        );
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(
+    public ResponseEntity<CategoryResponse> create(
             @AuthenticationPrincipal User user,
             @Valid @RequestBody CategoryRequest request) {
-        System.out.println("=== CategoryController.create ===");
-        System.out.println("User: " + user);
-        try {
-            Category category = Category.builder()
-                    .name(request.getName())
-                    .type(request.getType())
-                    .user(user)
-                    .build();
-            return ResponseEntity.ok(categoryRepository.save(category));
-        } catch (Exception e) {
-            System.out.println("ERRO: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
+        Category category = Category.builder()
+                .name(request.getName())
+                .type(request.getType())
+                .user(user)
+                .build();
+        return ResponseEntity.ok(CategoryResponse.from(categoryRepository.save(category)));
     }
 
     @Data
