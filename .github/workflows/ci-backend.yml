@@ -24,10 +24,8 @@ jobs:
           java-version: 21
           distribution: temurin
 
-      - name: Permissão do mvnw
-        working-directory: backend
-        run: chmod +x mvnw
-
       - name: Build e testes
         working-directory: backend
-        run: ./mvnw verify
+        run: |
+          chmod +x mvnw
+          ./mvnw verify
