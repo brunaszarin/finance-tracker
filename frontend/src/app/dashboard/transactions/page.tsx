@@ -18,13 +18,19 @@ import { useCategories } from '@/hooks/use-categories'
 
 const transactionSchema = z.object({
   description: z.string().min(1, 'Descrição é obrigatória'),
-  amount: z.coerce.number().min(0.01, 'Valor deve ser maior que zero'),
+  amount: z.number().min(0.01, 'Valor deve ser maior que zero'),
   date: z.string().min(1, 'Data é obrigatória'),
   type: z.enum(['INCOME', 'EXPENSE']),
   categoryId: z.string().min(1, 'Categoria é obrigatória'),
 })
 
-type TransactionForm = z.infer<typeof transactionSchema>
+type TransactionForm = {
+  description: string
+  amount: number
+  date: string
+  type: 'INCOME' | 'EXPENSE'
+  categoryId: string
+}
 
 const inputClass = "bg-white border border-gray-200 rounded-lg text-sm h-9 px-3"
 const popoverClass = "p-1 bg-white border border-gray-200 rounded-xl shadow-lg"
@@ -164,7 +170,7 @@ export default function TransactionsPage() {
                     step="0.01"
                     placeholder="0,00"
                     className={inputClass}
-                    {...register('amount')}
+                    {...register('amount', { valueAsNumber: true })}
                   />
                   {errors.amount && <p className="text-xs text-red-500">{errors.amount.message}</p>}
                 </div>
