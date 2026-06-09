@@ -15,8 +15,10 @@ function createWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
-  return ({ children }: { children: React.ReactNode }) =>
+  const Wrapper = ({ children }: { children: React.ReactNode }) =>
     createElement(QueryClientProvider, { client: queryClient }, children)
+  Wrapper.displayName = 'QueryClientWrapper'
+  return Wrapper
 }
 
 describe('useCategories', () => {
