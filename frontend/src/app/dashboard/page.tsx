@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { TrendingUp, TrendingDown, Wallet, ChevronLeft, ChevronRight } from 'lucide-react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/store/auth-store'
 import { useSummary } from '@/hooks/use-summary'
 import { useTransactions } from '@/hooks/use-transactions'
 

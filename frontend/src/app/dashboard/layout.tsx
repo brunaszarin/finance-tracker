@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, ArrowLeftRight, LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
 
 const navItems = [
