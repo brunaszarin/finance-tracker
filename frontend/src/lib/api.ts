@@ -1,10 +1,20 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = typeof window !== 'undefined'
-    ? localStorage.getItem('token')
-    : null
+function getToken(): string | null {
+  if (typeof window === 'undefined') return null
+  
+  // tenta localStorage primeiro
+  const localToken = localStorage.getItem('token')
+  if (localToken) return localToken
+  
+  // fallback para cookie
+  const match = document.cookie.match(/(^|;\s*)token=([^;]+)/)
+  return match ? match[2] : null
+}
 
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = getToken()
+  
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
@@ -13,11 +23,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
       ...options?.headers,
     },
   })
-
+  
   if (!response.ok) {
     throw new Error(`API error: ${response.status}`)
   }
-
   return response.json()
 }
 
