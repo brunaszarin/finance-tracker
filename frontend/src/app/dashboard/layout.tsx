@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, ArrowLeftRight, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, ArrowLeftRight, Tag, LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { useAuthStore } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
@@ -10,20 +10,21 @@ import { cn } from '@/lib/utils'
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { href: '/dashboard/transactions', label: 'Transactions', icon: ArrowLeftRight },
+  { href: '/dashboard/categories', label: 'Categories', icon: Tag },
 ]
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const { user, logout } = useAuthStore()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-
-  function handleLogout() {
-    logout()
-    router.push('/login')
-  }
-
-  const SidebarContent = () => (
+function SidebarContent({
+  pathname,
+  user,
+  onLogout,
+  onClose,
+}: {
+  pathname: string
+  user: { name?: string; email?: string } | null
+  onLogout: () => void
+  onClose: () => void
+}) {
+  return (
     <>
       <div className="mb-8 px-2">
         <span className="text-xl font-bold text-gray-900">Finance</span>
@@ -41,7 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Link
               key={item.href}
               href={item.href}
-              onClick={() => setSidebarOpen(false)}
+              onClick={onClose}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 isActive
@@ -62,7 +63,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <p className="text-xs text-gray-400 truncate">{user?.email}</p>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={onLogout}
           className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
         >
           <LogOut size={18} />
@@ -71,16 +72,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
     </>
   )
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const router = useRouter()
+  const { user, logout } = useAuthStore()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  function handleLogout() {
+    logout()
+    router.push('/login')
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
 
-      {/* Sidebar desktop */}
       <aside className="hidden md:flex w-56 bg-white border-r border-gray-100 flex-col py-6 px-4 fixed h-full">
-        <SidebarContent />
+        <SidebarContent
+          pathname={pathname}
+          user={user}
+          onLogout={handleLogout}
+          onClose={() => setSidebarOpen(false)}
+        />
       </aside>
 
-      {/* Overlay mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-20 md:hidden"
@@ -88,7 +104,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
       )}
 
-      {/* Sidebar mobile */}
       <aside className={cn(
         'fixed top-0 left-0 h-full w-64 bg-white z-30 flex flex-col py-6 px-4 transition-transform duration-300 md:hidden',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -99,13 +114,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         >
           <X size={20} />
         </button>
-        <SidebarContent />
+        <SidebarContent
+          pathname={pathname}
+          user={user}
+          onLogout={handleLogout}
+          onClose={() => setSidebarOpen(false)}
+        />
       </aside>
 
-      {/* Main content */}
       <div className="flex-1 md:ml-56 flex flex-col min-h-screen">
-
-        {/* Header mobile */}
         <header className="md:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
           <button
             onClick={() => setSidebarOpen(true)}
