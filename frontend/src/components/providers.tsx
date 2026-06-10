@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAuthStore } from '@/store/auth-store'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -10,16 +10,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60,
-        retry: 1,
+        retry: false,
       },
     },
   }))
 
-  const initFromStorage = useAuthStore((state) => state.initFromStorage)
-
-  useEffect(() => {
-    initFromStorage()
-  }, [initFromStorage])
+  useState(() => {
+    useAuthStore.getState().initFromStorage()
+  })
 
   return (
     <QueryClientProvider client={queryClient}>
