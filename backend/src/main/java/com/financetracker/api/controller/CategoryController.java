@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -43,6 +44,15 @@ public class CategoryController {
                 .user(user)
                 .build();
         return ResponseEntity.ok(CategoryResponse.from(categoryRepository.save(category)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id) {
+        categoryRepository.findByIdAndUser(id, user)
+                .ifPresent(categoryRepository::delete);
+        return ResponseEntity.noContent().build();
     }
 
     @Data
