@@ -19,8 +19,7 @@
 
 ---
 
-<!-- Adicionar screenshot do dashboard aqui -->
-<!-- ![Dashboard](./docs/dashboard.png) -->
+![Dashboard](frontend\assets\documentation-finance-tracker.png)
 
 ---
 
