@@ -29,6 +29,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+        System.out.println("=== JwtAuthFilter === URI: " + request.getRequestURI());
+        System.out.println("Auth header: " + (authHeader != null ? "presente" : "null"));
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -36,19 +38,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String email = jwtService.extractEmail(token);
+        System.out.println("Token length: " + token.length());
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails user = userRepository.findByEmail(email).orElseThrow();
+        try {
+            String email = jwtService.extractEmail(token);
+            System.out.println("Email extraído: " + email);
 
-            if (jwtService.isTokenValid(token, email)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails user = userRepository.findByEmail(email).orElseThrow();
+                System.out.println("Usuário encontrado: " + user.getUsername());
+
+                if (jwtService.isTokenValid(token, email)) {
+                    System.out.println("Token válido!");
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    System.out.println("Token INVÁLIDO!");
+                }
             }
+        } catch (Exception e) {
+            System.out.println("ERRO no JwtAuthFilter: " + e.getMessage());
+            e.printStackTrace();
         }
 
         filterChain.doFilter(request, response);
     }
-}
