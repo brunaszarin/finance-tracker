@@ -15,19 +15,14 @@ import java.util.UUID;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
-    List<Transaction> findByUserOrderByDateDesc(User user);
-
-    List<Transaction> findByUserAndDateBetweenOrderByDateDesc(
-            User user, LocalDate start, LocalDate end);
+    @Query("SELECT t FROM Transaction t JOIN FETCH t.category WHERE t.user = :user ORDER BY t.date DESC")
+    List<Transaction> findByUserOrderByDateDesc(@Param("user") User user);
 
     Optional<Transaction> findByIdAndUser(UUID id, User user);
 
-    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t " +
-            "WHERE t.user = :user AND t.type = :type " +
-            "AND t.date BETWEEN :start AND :end")
-    BigDecimal sumByUserAndTypeAndDateBetween(
-            @Param("user") User user,
-            @Param("type") TransactionType type,
-            @Param("start") LocalDate start,
-            @Param("end") LocalDate end);
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.user = :user AND t.type = :type AND t.date BETWEEN :start AND :end")
+    BigDecimal sumByUserAndTypeAndDateBetween(@Param("user") User user,
+                                              @Param("type") TransactionType type,
+                                              @Param("start") LocalDate start,
+                                              @Param("end") LocalDate end);
 }
