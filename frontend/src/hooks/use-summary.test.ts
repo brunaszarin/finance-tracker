@@ -6,9 +6,12 @@ import { useSummary } from './use-summary'
 import { api } from '@/lib/api'
 
 vi.mock('@/lib/api', () => ({
-  api: {
-    get: vi.fn(),
-  },
+  api: { get: vi.fn() },
+}))
+
+vi.mock('@/store/auth-store', () => ({
+  useAuthStore: (selector: (state: { token: string }) => unknown) =>
+    selector({ token: 'fake-token' }),
 }))
 
 function createWrapper() {
@@ -17,14 +20,12 @@ function createWrapper() {
   })
   const Wrapper = ({ children }: { children: React.ReactNode }) =>
     createElement(QueryClientProvider, { client: queryClient }, children)
-  Wrapper.displayName = 'QueryClientWrapper'
+  Wrapper.displayName = 'TestWrapper'
   return Wrapper
 }
 
 describe('useSummary', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
+  beforeEach(() => { vi.clearAllMocks() })
 
   it('deve retornar resumo do mês', async () => {
     // Arrange

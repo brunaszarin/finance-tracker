@@ -6,9 +6,12 @@ import { useCategories } from './use-categories'
 import { api } from '@/lib/api'
 
 vi.mock('@/lib/api', () => ({
-  api: {
-    get: vi.fn(),
-  },
+  api: { get: vi.fn() },
+}))
+
+vi.mock('@/store/auth-store', () => ({
+  useAuthStore: (selector: (state: { token: string }) => unknown) =>
+    selector({ token: 'fake-token' }),
 }))
 
 function createWrapper() {
@@ -17,14 +20,11 @@ function createWrapper() {
   })
   const Wrapper = ({ children }: { children: React.ReactNode }) =>
     createElement(QueryClientProvider, { client: queryClient }, children)
-  Wrapper.displayName = 'QueryClientWrapper'
+  Wrapper.displayName = 'TestWrapper'
   return Wrapper
 }
-
 describe('useCategories', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
+  beforeEach(() => { vi.clearAllMocks() })
 
   it('deve retornar lista de categorias', async () => {
     // Arrange
