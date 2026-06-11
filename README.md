@@ -19,7 +19,7 @@
 
 ---
 
-![Dashboard](frontend\assets\documentation-finance-tracker.png)
+![Dashboard](https://github.com/brunaszarin/finance-tracker/blob/main/frontend/assets/documentation-finance-tracker.png)
 
 ---
 
